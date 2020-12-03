@@ -1,22 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import { IDataView } from './dataViewTypes'
-//
-// import store, {AppThunk} from '../../app/store'
-// import {
-//     ModelTypes,
-//     FilterItem,
-//     ActionTypes,
-//     Filter,
-//     DataFilterResult,
-//     DataResult,
-//     IPagination,
-//     IDataView, DataResultWithHeaders, IErrorItem
-// } from './dataViewTypes';
-// import useDataView from "./useDataView";
-// import {useSelector} from "react-redux";
-// import {RootState} from "../../app/rootReducer";
-//
+import { IDataView, IFilter } from './dataViewTypes'
 
+
+let filters: IFilter[] = [];
 let sort: string = '';
 
 // eslint-disable-next-line no-restricted-globals
@@ -26,23 +12,18 @@ params.forEach((value: string, key: string) => {
     if (key === 'sort') {
         sort = value;
     } else {
-        // let fieldMatch = key.match(/\[(.*)\]/);
-        // let field = fieldMatch ? fieldMatch[1] : '';
-        //
-        // if (field === '' || field == null || field.length <= 1) {
-        //     return true;
-        // }
-        // let filter: Filter = {field, value}
-        // filterInitialState.push(filter);
+        let fieldMatch = key.match(/\[(.*)\]/);
+        let field = fieldMatch ? fieldMatch[1] : '';
+        if (field === '' || field == null || field.length <= 1) {
+            return true;
+        }
+        filters.push({field, value});
     }
 })
 const initialState: IDataView = {
     data: [],
-    sort : sort
-    // filters: filterInitialState,
-    // sort: sortInitialState,
-    // pagination : paginationInitialState,
-    // errors : []
+    sort : sort,
+    filters : filters
 }
 
 
@@ -81,19 +62,17 @@ const dataViewReducer = createSlice({
         //     state.pagination.items = setPaginationItems(state.pagination)
         // },
         //
-        // setFilterValue: function (state, {payload}: PayloadAction<Filter>) {
-        //     const {field, value} = payload;
-        //     let filters = state.filters;
-        //
-        //     let filterIndex = filters.findIndex(filter => filter.field === field);
-        //     if (filterIndex !== -1) {
-        //         filters[filterIndex].value = value;
-        //     } else {
-        //         filters = [...filters, {field: field, value: value}]
-        //     }
-        //     state.filters = filters;
-        // },
-        //
+        setFilterValue: function (state, {payload}: PayloadAction<IFilter>) {
+            const {field, value} = payload;
+            let filters = state.filters;
+            let filterIndex = filters.findIndex(filter => filter.field === field);
+            if (filterIndex !== -1) {
+                filters[filterIndex].value = value;
+            } else {
+                filters = [...filters, {field: field, value: value}]
+            }
+            state.filters = filters;
+        },
         setSort(state, {payload}: PayloadAction<string>) {
             if (state.sort === payload) {
                 payload = `-${payload}`
@@ -237,6 +216,7 @@ export const {
     // setFilterValue,
     // setError,
     setSort,
+    setFilterValue,
     // clearError
 } = dataViewReducer.actions
 

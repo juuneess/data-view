@@ -5,10 +5,21 @@ import { ColumnTypes } from "./dataViewEnum";
 
 export interface IDataView {
     data : [],
-    // filters : Filter[],
+    filters : IFilter[],
     sort? : string,
     pagination? : IPagination
     errors? : IErrorItem[]
+}
+
+export interface IFilter {
+    field : string,
+    value : string,
+    data? :  FilterItem[]
+}
+
+export interface FilterItem {
+    id : any,
+    value : any
 }
 
 export interface IErrorItem{
@@ -112,16 +123,9 @@ export interface IColumn {
 //
 //
 //
-// export interface FilterItem {
-//     id : any,
-//     value : any
-// }
+
 //
-// export interface Filter {
-//     field : string,
-//     value : string,
-//     data? :  FilterItem[]
-// }
+
 //
 
 //

@@ -7,7 +7,7 @@ const useDataView = () => {
 
     const dispatch = useDispatch();
 
-    const {data, sort } = useSelector((state: RootState) => state.dataView)
+    const {data, sort, filters } = useSelector((state: RootState) => state.dataView)
     // const [isOpenCalendar, setIsOpenCalendar] = useState(false);
 
     // function toggleCalendar() {
@@ -18,13 +18,13 @@ const useDataView = () => {
         console.log('updateURL');
         // eslint-disable-next-line no-restricted-globals
         const params = new URLSearchParams(location.search);
-        // filters.forEach((filter, index) => {
-        //     if(filter.value !== null && filter.value !== '' && typeof (filter.value) !== "undefined"){
-        //         params.set(`filter[${filter.field}]`, filter.value);
-        //     }else{
-        //         params.delete(`filter[${filter.field}]`)
-        //     }
-        // });
+        filters.forEach((filter, index) => {
+            if(filter.value !== null && filter.value !== '' && typeof (filter.value) !== "undefined"){
+                params.set(`filter[${filter.field}]`, filter.value);
+            }else{
+                params.delete(`filter[${filter.field}]`)
+            }
+        });
         if(sort !== '' && typeof sort !== "undefined"){
             params.set('sort', sort);
         }

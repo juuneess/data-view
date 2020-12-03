@@ -1,10 +1,11 @@
 import React, {ChangeEvent, ComponentType, EventHandler, PropsWithChildren, useEffect} from 'react'
 import {RootState} from '../../rootReducer'
 import {useDispatch, useSelector} from 'react-redux'
-import {IColumn} from "./dataViewTypes";
+import {IColumn, IFilter} from "./dataViewTypes";
 import '../dataView/dataView.css'
-import {setSort} from './dataViewSlice';
+import {setFilterValue, setSort} from './dataViewSlice';
 import useDataView from "./useDataView";
+import { ColumnTypes } from './dataViewEnum';
 
 // import {RootState} from '../../app/rootReducer'
 // import {setCurrentPage, setFilterValue, setPerPage, setSort} from "./dataViewSlice";
@@ -18,7 +19,7 @@ import useDataView from "./useDataView";
 //
 // type InputEvent = ChangeEvent<HTMLInputElement>
 // type SelectEvent = ChangeEvent<HTMLSelectElement>
-// type ChangeHandler = (e: InputEvent) => void
+type ChangeHandler = (e: ChangeEvent<HTMLInputElement>) => void
 // type SelectHandler = (e: SelectEvent) => void
 // type KeyboardEventHandler = EventHandler<React.KeyboardEvent>;
 
@@ -52,13 +53,15 @@ interface TableProps {
 
 export function DataView<T extends ItemType>({data, columns}: PropsWithChildren<DWProps<T>>) {
 
-    const {sort} = useSelector((state: RootState) => state.dataView)
+    const {sort, filters} = useSelector((state: RootState) => state.dataView)
 
     const {updateURL} = useDataView();
 
     useEffect(() => {
         updateURL();
     })
+
+    console.log(filters);
 
     return <div className={'data-view'}>
         <Table data={data} columns={columns}/>
@@ -75,7 +78,7 @@ function Table<T extends ItemType>({data, columns}: DWProps<T>) {
         <table className="table table-bordered">
             <thead>
             <TitleRaw columns={columns}/>
-            {/*<FilterRaw columns={columns} actions={actions}/>*/}
+            <FilterRaw columns={columns}/>
             </thead>
             {/*<tbody>{data.map((item, index) => (*/}
             {/*    <tr key={index} style={{backgroundColor : item.color}}>*/}
@@ -116,7 +119,6 @@ function TitleRaw({columns}: TableProps) {
     const dispatch = useDispatch()
     const {sort} = useSelector((state: RootState) => state.dataView)
 
-
     const handleSort = (field: string) => {
         dispatch(setSort(field));
     }
@@ -134,6 +136,96 @@ function TitleRaw({columns}: TableProps) {
         <th/>
     </tr>
 }
+
+function FilterRaw ({columns}: TableProps){
+
+    const dispatch = useDispatch()
+    const {filters} = useSelector((state: RootState) => state.dataView)
+
+    const onChangedValue: ChangeHandler = e => {
+        dispatch(setFilterValue({
+            field: e.target.name,
+            value: e.target.value
+        }));
+    }
+
+    // const handleKeywordKeyPress : KeyboardEventHandler = e =>{
+    //     if(e.key == 'Enter'){
+    //         dispatch(setFilterValue({
+    //             field: e.target.name,
+    //             value: e.target.value
+    //         }));
+    //     }
+    // };
+
+    // const onChangeSelect = (filter : ValueType<any>, field :string) => {
+    //     dispatch(setFilterValue({
+    //         field: field,
+    //         value: filter ? filter.id : ''
+    //     }));
+    // }
+
+    return <tr>{columns.map((column, index) => {
+        if (column.filterable) {
+
+            let filter : IFilter = filters.find(filter => filter.field === column.field) || {field : column.field, value : ''};
+            console.log(filter);
+            //
+            // let selectFilter : Filter = filters.find(filter => filter.field === column.selectField)
+            //     || {field : column.field.toString(), value : ''};
+            //
+            //
+            // if(column.type === ColumnTypes.render && column.selectData?.length && column.selectData.length > 0){
+            //     const options = (column.selectData || []).map((filter) => {return {id : filter.id, text : filter.value}});
+            //     return  <td key={index} style={column.style}>
+            //         <CreatableSelect
+            //             placeholder={column.title}
+            //             isClearable
+            //             isMulti={false}
+            //             onChange={(filter) => onChangeSelect(filter, column.selectField || '' )}
+            //             getOptionLabel={v => v.text}
+            //             getOptionValue={v => v.id}
+            //             options={options }
+            //             value={options.find(o => o.id == selectFilter.value)}
+            //         />
+            //     </td>
+            // }
+
+            switch (column.type) {
+                case ColumnTypes.string:
+                case ColumnTypes.render:
+                {
+                    // return <td key={index} style={column.style}>
+                    return <td key={index}>
+                        <input name={column.field}
+                               value={filter.value}
+                               onChange={onChangedValue}
+                        />
+                    </td>
+                }
+                // case ColumnTypes.select: {
+                //     const options = (column.selectData || []).map((filter) => {return {id : filter.id, text : filter.value}});
+                //     return  <td key={index} style={column.style}>
+                //         <CreatableSelect
+                //             placeholder={column.title}
+                //             isClearable
+                //             isMulti={false}
+                //             onChange={(filter) => onChangeSelect(filter, column.selectField || '' )}
+                //             getOptionLabel={v => v.text}
+                //             getOptionValue={v => v.id}
+                //             options={options }
+                //             value={options.find(o => o.id == selectFilter.value)}
+                //         />
+                //     </td>
+                // }
+            }
+        }
+        return <td key={index}/>;
+    })}
+        <td/>
+    </tr>
+}
+
 
 //
 // const PaginationInfo = () => {
@@ -201,93 +293,4 @@ function TitleRaw({columns}: TableProps) {
 //     </tr>
 // }
 //
-// const FilterRaw = ({columns, actions}: FProps) => {
-//
-//     const dispatch = useDispatch()
-//     const {filters} = useSelector((state: RootState) => state.dataView)
-//
-//     const onChangedValue: ChangeHandler = e => {
-//         dispatch(setFilterValue({
-//             field: e.target.name,
-//             value: e.target.value
-//         }));
-//     }
-//
-//     // const handleKeywordKeyPress : KeyboardEventHandler = e =>{
-//     //     if(e.key == 'Enter'){
-//     //         dispatch(setFilterValue({
-//     //             field: e.target.name,
-//     //             value: e.target.value
-//     //         }));
-//     //     }
-//     // };
-//
-//     const onChangeSelect = (filter : ValueType<any>, field :string) => {
-//         dispatch(setFilterValue({
-//             field: field,
-//             value: filter ? filter.id : ''
-//         }));
-//     }
-//
-//     return <tr>{columns.map((column, index) => {
-//         if (column.filterable) {
-//
-//             let filter : Filter = filters.find(filter => filter.field === column.field)
-//                 || {field : column.field.toString(), value : ''};
-//
-//             let selectFilter : Filter = filters.find(filter => filter.field === column.selectField)
-//                 || {field : column.field.toString(), value : ''};
-//
-//
-//             if(column.type === ColumnTypes.render && column.selectData?.length && column.selectData.length > 0){
-//                 const options = (column.selectData || []).map((filter) => {return {id : filter.id, text : filter.value}});
-//                 return  <td key={index} style={column.style}>
-//                     <CreatableSelect
-//                         placeholder={column.title}
-//                         isClearable
-//                         isMulti={false}
-//                         onChange={(filter) => onChangeSelect(filter, column.selectField || '' )}
-//                         getOptionLabel={v => v.text}
-//                         getOptionValue={v => v.id}
-//                         options={options }
-//                         value={options.find(o => o.id == selectFilter.value)}
-//                     />
-//                 </td>
-//             }
-//
-//             switch (column.type) {
-//                 case ColumnTypes.string:
-//                 case ColumnTypes.render:
-//                 {
-//                     return <td key={index} style={column.style}>
-//                         <input name={column.field.toString()}
-//                                value={filter.value}
-//                                defaultValue={filter.value}
-//                                onChange={onChangedValue}
-//                                // onKeyUp={handleKeywordKeyPress}
-//                         />
-//                     </td>
-//                 }
-//                 case ColumnTypes.select: {
-//                     const options = (column.selectData || []).map((filter) => {return {id : filter.id, text : filter.value}});
-//                     return  <td key={index} style={column.style}>
-//                         <CreatableSelect
-//                             placeholder={column.title}
-//                             isClearable
-//                             isMulti={false}
-//                             onChange={(filter) => onChangeSelect(filter, column.selectField || '' )}
-//                             getOptionLabel={v => v.text}
-//                             getOptionValue={v => v.id}
-//                             options={options }
-//                             value={options.find(o => o.id == selectFilter.value)}
-//                         />
-//                     </td>
-//                 }
-//             }
-//         }
-//         return <td key={index}/>;
-//     })}
-//         <td/>
-//     </tr>
-// }
-//
+

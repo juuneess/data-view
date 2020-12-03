@@ -1,0 +1,96 @@
+
+.data-view{
+    font-size: 16px;
+}
+
+th.pointer{
+    color: #3c8dbc;
+    cursor: pointer;
+}
+
+.filter{
+    display: flex;
+    user-select: none;
+}
+
+th svg{
+    margin-left: 4px;
+    margin-top: auto;
+    margin-bottom: 4px;
+    width: 15px;
+}
+
+
+/*.table-view{*/
+/*    overflow-x: scroll;*/
+/*    height: 74vh;*/
+/*}*/
+
+/*.table > thead > tr > th{*/
+/*    background: white;*/
+/*    position: sticky;*/
+/*    top: -1px;*/
+/*    z-index: 2;*/
+/*    box-shadow: inset 0 1px 0 #f4f4f4, inset 0 -1px 0 #f4f4f4;*/
+/*    border-bottom-width: 0px;*/
+/*}*/
+
+/*.table > thead > tr > td{*/
+/*    background: white;*/
+/*    position: sticky;*/
+/*    top: 34px;*/
+/*    box-shadow: inset 0 1px 0 #f4f4f4, inset 0 -2px 0 #f4f4f4;*/
+/*    border-bottom-width: 0px;*/
+/*}*/
+
+
+/*td input{*/
+/*    width: 100%;*/
+/*    border: 1px solid #d2d6de ;*/
+/*    border-radius: 3px;*/
+/*    height: 34px;*/
+/*}*/
+
+/*.actions{*/
+/*    white-space: nowrap;*/
+/*    flex-wrap: inherit;*/
+/*}*/
+
+/*.actions .fas{*/
+/*    cursor: pointer;*/
+/*    margin: 0 3px;*/
+/*    color: #007bff;*/
+/*}*/
+
+/*.filter{*/
+/*    display: flex;*/
+/*}*/
+
+
+
+/*.actions svg{*/
+/*    cursor: pointer;*/
+/*    margin: 0 3px;*/
+/*    color: #007bff;*/
+/*}*/
+
+/*.css-b8ldur-Input input{*/
+/*    height: auto;*/
+/*}*/
+
+/*.pagination{*/
+/*    margin-top: 5px;*/
+/*    margin-bottom: 0;*/
+/*}*/
+
+/*.pagination select{*/
+/*    margin-left: 5px;*/
+/*}*/
+
+/*.error{*/
+/*    color: red;*/
+/*}*/
+
+/*.form-group-error .css-2b097c-container  .css-yk16xz-control{*/
+/*    border-color: red;*/
+/*}*/

@@ -20,6 +20,19 @@ th svg{
     width: 15px;
 }
 
+.actions{
+    display: flex;
+    white-space: nowrap;
+    flex-wrap: inherit;
+}
+
+.actions svg{
+    cursor: pointer;
+    margin: 0 3px;
+    color: #007bff;
+    width: 16px;
+}
+
 
 /*.table-view{*/
 /*    overflow-x: scroll;*/
@@ -51,16 +64,7 @@ th svg{
 /*    height: 34px;*/
 /*}*/
 
-/*.actions{*/
-/*    white-space: nowrap;*/
-/*    flex-wrap: inherit;*/
-/*}*/
 
-/*.actions .fas{*/
-/*    cursor: pointer;*/
-/*    margin: 0 3px;*/
-/*    color: #007bff;*/
-/*}*/
 
 /*.filter{*/
 /*    display: flex;*/

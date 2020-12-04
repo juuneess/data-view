@@ -1,0 +1,90 @@
+.is-required::after {
+    content: "*";
+    margin-left: 3px;
+    font-weight: normal;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: tomato;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    opacity: .5;
+}
+
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+}
+
+.modal {
+    z-index: 100 !important;
+    display: block !important;
+    background: white !important;
+    position: relative !important;
+    margin: 1.75rem auto !important;
+    border-radius: 3px !important;
+    max-width: 600px !important;
+    padding: 1rem !important;
+    height: auto !important;
+}
+
+.modal-header{
+    border-bottom: none;
+}
+
+.modal-footer{
+    border-top: none;
+    padding: 0 0.75em;
+}
+
+.modal-body label{
+    font-weight: 400;
+    color: #6F7985;
+}
+
+.modal-body .form-control{
+    border-radius: 3px;
+}
+
+.modal-header {
+    display: flex;
+    /*justify-content: flex-end;*/
+}
+
+.modal-title{
+  font-size: 16px;
+  font-weight: 500;
+}
+.modal-close-button {
+    margin-left: auto;
+    /*font-size: 1.4rem;*/
+    /*font-weight: 700;*/
+    /*line-height: 1;*/
+    /*color: #000;*/
+    /*opacity: .3;*/
+    /*cursor: pointer;*/
+    /*border: none;*/
+}
+
+.modal-close-button svg{
+    font-size: 1.5em;
+    color: grey;
+    opacity: 0.5;
+}
+
+.modal-header svg{
+    cursor: pointer;
+}

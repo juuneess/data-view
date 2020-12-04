@@ -5,7 +5,12 @@ import {IColumn, IFilter} from "./dataViewTypes";
 import '../dataView/dataView.css'
 import {setFilterValue, setSort} from './dataViewSlice';
 import useDataView from "./useDataView";
-import { ColumnTypes } from './dataViewEnum';
+import {ColumnTypes} from './dataViewEnum';
+import {Pencil, SortDown, SortUp} from '../icons';
+import {Button, Modal } from 'react-bootstrap';
+// import Modal from "../modal/Modal";
+import { setModalShow } from '../modal/modalSlice';
+import {Modes} from "../modal/ModalTypes";
 
 // import {RootState} from '../../app/rootReducer'
 // import {setCurrentPage, setFilterValue, setPerPage, setSort} from "./dataViewSlice";
@@ -23,63 +28,114 @@ type ChangeHandler = (e: ChangeEvent<HTMLInputElement>) => void
 // type SelectHandler = (e: SelectEvent) => void
 // type KeyboardEventHandler = EventHandler<React.KeyboardEvent>;
 
-const SortUp = () =>
-    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="sort-amount-up"
-         className="svg-inline--fa fa-sort-amount-up fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 512 512">
-        <path fill="currentColor"
-              d="M304 416h-64a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zM16 160h48v304a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16V160h48c14.21 0 21.38-17.24 11.31-27.31l-80-96a16 16 0 0 0-22.62 0l-80 96C-5.35 142.74 1.77 160 16 160zm416 0H240a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm-64 128H240a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zM496 32H240a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h256a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"></path>
-    </svg>
 
-const SortDown = () =>
-    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="sort-amount-down"
-         className="svg-inline--fa fa-sort-amount-down fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 512 512">
-        <path fill="currentColor"
-              d="M304 416h-64a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm-128-64h-48V48a16 16 0 0 0-16-16H80a16 16 0 0 0-16 16v304H16c-14.19 0-21.37 17.24-11.29 27.31l80 96a16 16 0 0 0 22.62 0l80-96C197.35 369.26 190.22 352 176 352zm256-192H240a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm-64 128H240a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zM496 32H240a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h256a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"></path>
-    </svg>
-
-
-export type ItemType<P = any> = { [K in keyof P]: string | number }
+export type ItemType<P = any> = { [K in keyof P]: string | number | P }
 
 interface DWProps<T> {
     data: T[],
     columns: IColumn[],
+    modal? : () => JSX.Element
+    action?: ({item}: ItemType) => JSX.Element
 }
 
 interface TableProps {
     columns: IColumn[],
+    action?: ({item}: ItemType) => JSX.Element
 }
 
-export function DataView<T extends ItemType>({data, columns}: PropsWithChildren<DWProps<T>>) {
+export function DataView<T extends ItemType>({ data, columns, action, modal }: PropsWithChildren<DWProps<T>>) {
 
-    const {sort, filters} = useSelector((state: RootState) => state.dataView)
-
+    const dispatch = useDispatch()
     const {updateURL} = useDataView();
+    const {show, mode} = useSelector((state: RootState) => state.modal)
 
     useEffect(() => {
         updateURL();
     })
 
-    console.log(filters);
+
+    const handleCloseModal= () => {
+        dispatch(setModalShow(false))
+    }
+
+    const update = () => {
+        dispatch(setModalShow(false))
+    }
+
+    const create = () => {
+        dispatch(setModalShow(false))
+    }
+
 
     return <div className={'data-view'}>
-        <Table data={data} columns={columns}/>
 
+        <Table data={data} columns={columns} action={action}/>
+
+        <Modal show={show} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+                {mode === Modes.create && <Modal.Title>Создать</Modal.Title>}
+                {mode === Modes.update && <Modal.Title>Обновить</Modal.Title>}
+            </Modal.Header>
+            <Modal.Body>
+                {modal}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant={'secondary'} onClick={handleCloseModal}>Отмена</Button>
+                {mode === Modes.create &&  <Button variant={'primary'} onClick={update}>Создать</Button>}
+                {mode === Modes.update &&  <Button variant={'primary'} onClick={create}>Обновить</Button>}
+            </Modal.Footer>
+        </Modal>
+
+        {/*<Modal isShow={isShow} hide={()=>dispatch(setIsShow)} bodyContent={<div>ll</div>} title={'titis'}/>*/}
         {/*<PaginationInfo/>*/}
         {/*<Table columns={columns} actions={actions} renderActionColumn={renderActionColumn} data={data}/>*/}
         {/*<PaginationButtons/>*/}
     </div>
 }
 
-// const Table = ({columns, actions, renderActionColumn, data}: DWProps) => {
-function Table<T extends ItemType>({data, columns}: DWProps<T>) {
+function Table<T extends ItemType>({data, columns, action}: DWProps<T>) {
+
+    const dispatch = useDispatch()
+
+    const onUpdate = () => {
+        dispatch(setModalShow(true))
+    }
+
     return <div className={'table-view'}>
         <table className="table table-bordered">
             <thead>
-            <TitleRaw columns={columns}/>
-            <FilterRaw columns={columns}/>
+            <TitleRaw columns={columns} action={action}/>
+            <FilterRaw columns={columns} action={action}/>
             </thead>
+            <tbody>{data.map((item, index) =>
+                <tr key={index} style={{backgroundColor: item.color?.toString()}}>
+                    {columns.map((column, columnIndex) => {
+                        switch (column.type) {
+                            case ColumnTypes.serial:
+                                return <td key={columnIndex}>{index + 1}</td>
+                            case ColumnTypes.string:
+                            case ColumnTypes.select: {
+                                let fields = column.field; // допускаем вложенность
+                                let data = item;
+                                fields.split('.').forEach((field) => {
+                                    if (data) {
+                                        data = data[field]
+                                    }
+                                });
+                                return <td key={columnIndex}>{data}</td>
+                            }
+                        }
+                        return <td/>
+                    })}
+                    <td>
+                        <div className={'actions'}>
+                            <div onClick={onUpdate}><Pencil/></div>
+                            <div onClick={onUpdate}><Pencil/></div>
+                        </div>
+                    </td>
+                    {/*{renderAction !== undefined && <td>{ renderAction(item)}</td>}*/}
+                </tr>
+            )}</tbody>
             {/*<tbody>{data.map((item, index) => (*/}
             {/*    <tr key={index} style={{backgroundColor : item.color}}>*/}
             {/*        {columns.map((column, columnIndex) => {*/}
@@ -115,7 +171,7 @@ function Table<T extends ItemType>({data, columns}: DWProps<T>) {
 }
 
 
-function TitleRaw({columns}: TableProps) {
+function TitleRaw({columns, action}: TableProps) {
     const dispatch = useDispatch()
     const {sort} = useSelector((state: RootState) => state.dataView)
 
@@ -133,11 +189,11 @@ function TitleRaw({columns}: TableProps) {
                 {`-${column.field}` === sort && <SortDown/>}
             </div>
         </th>))}
-        <th/>
+        {action !== undefined && <th/>}
     </tr>
 }
 
-function FilterRaw ({columns}: TableProps){
+function FilterRaw({columns, action}: TableProps) {
 
     const dispatch = useDispatch()
     const {filters} = useSelector((state: RootState) => state.dataView)
@@ -168,9 +224,11 @@ function FilterRaw ({columns}: TableProps){
     return <tr>{columns.map((column, index) => {
         if (column.filterable) {
 
-            let filter : IFilter = filters.find(filter => filter.field === column.field) || {field : column.field, value : ''};
-            console.log(filter);
-            //
+            let filter: IFilter = filters.find(filter => filter.field === column.field) || {
+                field: column.field,
+                value: ''
+            };
+
             // let selectFilter : Filter = filters.find(filter => filter.field === column.selectField)
             //     || {field : column.field.toString(), value : ''};
             //
@@ -193,13 +251,13 @@ function FilterRaw ({columns}: TableProps){
 
             switch (column.type) {
                 case ColumnTypes.string:
-                case ColumnTypes.render:
-                {
+                case ColumnTypes.render: {
                     // return <td key={index} style={column.style}>
                     return <td key={index}>
                         <input name={column.field}
                                value={filter.value}
                                onChange={onChangedValue}
+                               className={'form-control'}
                         />
                     </td>
                 }
@@ -222,12 +280,12 @@ function FilterRaw ({columns}: TableProps){
         }
         return <td key={index}/>;
     })}
-        <td/>
+        {/*{renderAction !== undefined && <td/>}*/}
     </tr>
 }
 
 
-//
+
 // const PaginationInfo = () => {
 //     const dispatch = useDispatch();
 //     const {pagination} = useSelector((state: RootState) => state.dataView)

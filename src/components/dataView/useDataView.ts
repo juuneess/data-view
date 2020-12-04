@@ -15,7 +15,6 @@ const useDataView = () => {
     // }
     //
     function updateURL() {
-        console.log('updateURL');
         // eslint-disable-next-line no-restricted-globals
         const params = new URLSearchParams(location.search);
         filters.forEach((filter, index) => {
@@ -30,7 +29,6 @@ const useDataView = () => {
         }
         // eslint-disable-next-line no-restricted-globals
         window.history.replaceState({}, "", decodeURIComponent(`${location.pathname}?${params}`));
-
     }
 
     return {
